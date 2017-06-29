@@ -1,2 +1,2 @@
 # OperationBladeRunner
-This where the code for the WindRider Robot will be created. All edits are going to be here. Have fun!
+Thomas and Mauricio will store the code for the Blade Runner robot here
