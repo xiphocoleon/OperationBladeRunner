@@ -1,5 +1,11 @@
 Pin Outs for the Microcontroller 
 
+// Description
+// PWM/Analog pins -> 2-14
+// 5V tolerant pins -> 10-21
+// All other digital pins are 3.3V tolerant 
+
+
 // Controlling Parts 
 Pin 2 ESC_1    // Speed controller 1
 Pin 3 ESC_2    // Speed Controller 2
