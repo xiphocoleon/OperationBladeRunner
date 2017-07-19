@@ -6,7 +6,7 @@ Pin Outs for the Microcontroller
 // All other digital pins are 3.3V tolerant 
 
 
-// Controlling Parts 
+// Controlling Parts -> For Servos/ESCs map from 0 - 4096
 Pin 2 ESC_1    // Speed controller 1
 Pin 3 ESC_2    // Speed Controller 2
 Pin 4 Servo_1 // Servo 1
