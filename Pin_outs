@@ -6,15 +6,16 @@ Pin Outs for the Microcontroller
 // All other digital pins are 3.3V tolerant 
 
 
-// Controlling Parts -> For Servos/ESCs map from 0 - 4096
-Pin 2 ESC_1    // Speed controller 1
+// Controlling Parts -> For Servos/ESCs map from 0 - 4096 
+Pin 2 ESC_1    // Speed controller 1 -> for automatic setting of the ESC we can program the the ESC to be high for a second or so and then set it low so it can do it automatically.
 Pin 3 ESC_2    // Speed Controller 2
-Pin 4 Servo_1 // Servo 1
-Pin 5 Servo_2 // Servo 2
+Pin 5 Servo_1 // Servo 1
+Pin 6 Servo_2 // Servo 2
 Pin 10 Camera 
 Pin 11 TX // For Wi-Fi Board
 Pin 12 RX // For Wi-Fi Board
 
+*note : pin 4 doesn't work for now :/
 //Service indicators
 
 Pin 13 LED_1 // Camera_on
