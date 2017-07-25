@@ -1,0 +1,41 @@
+#include <Servo.h>
+
+Servo up_down, left_right;
+byte Input_data[30]; 
+
+void setup() {
+
+  up_down.attach(5);
+  left_right.attach(6);
+  Serial.begin(9600);
+}
+
+void loop() {
+
+  class Camera_movement
+  {
+      Camera_movement::Camera_movement() // intialization
+      {
+        up_down.write(2048);
+        left_right.write(2048);
+
+      }
+      void Camera_movement::MOVE() // Operating the Camera
+      {
+        if(Input_data == 0x00) // left/right movement
+         {
+           for(;;)
+           {}
+          }
+         else if(Input_data == 0x01) // up/down movement
+         {
+
+          }
+          else{}
+    
+      }
+  };
+  // put your main code here, to run repeatedly:
+
+
+}
