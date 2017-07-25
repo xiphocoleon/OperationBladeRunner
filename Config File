@@ -5,6 +5,13 @@
 #define COMPRESSOR_ESC1_PIN 2
 #define COMPRESSOR_ESC2_PIN 3
 
+// Camera System -- ON and OFF pin
+#define CAMERA_PIN 10
+
+// WiFi System
+#define TX_PIN 11 // For Wi-Fi Board
+#define RX_PIN 12 // For Wi-Fi Board
+
 // Michael says that the pressure sensors are not used
 //#define PRESSURE_SENSOR1_PIN A0
 //#define PRESSURE_SENSOR2_PIN A1
