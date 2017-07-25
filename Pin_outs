@@ -28,3 +28,7 @@ Pin 19 LED_7  // Drive_Motor_2 on
 Pin 20 LED_8  // Steering_Motor_1 on
 Pin 21 LED_9  // Steering_Motor_2 on
 Pin 22 LED_10 // Pressure_Actuator on
+
+//Camera 
+//We have the camera set on Channel 1 
+//And the transceiver on Channel 1 Band E
