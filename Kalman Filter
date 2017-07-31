@@ -1,3 +1,8 @@
+/*
+Thomas: as of 7/25/2017 we do not need this file for anything
+*/
+
+
 // Filter temperature sensor readings using the Kalman process
 
 const int sensorPin = A0;  // named constant for the pin the sensor is connected to
