@@ -1,7 +1,8 @@
 #include <Servo.h>
 
 Servo up_down, left_right;
-byte Input_data[30]; 
+byte Input_data[30];
+int i;
 
 void setup() {
 
@@ -16,24 +17,65 @@ void loop() {
   {
       Camera_movement::Camera_movement() // intialization
       {
-        up_down.write(2048);
-        left_right.write(2048);
+        current_pos = 2048;
+        up_down.write(current_pos);
+        left_right.write(current_pos);
 
       }
-      void Camera_movement::MOVE() // Operating the Camera
+      void Camera_movement::MOVE_LEFT(byte b) // Operating the Camera 
+                                             // b = input buffer information
       {
-        if(Input_data == 0x00) // left/right movement
-         {
-           for(;;)
-           {}
+        if( b == 0x03) // left movement
+          {
+            while ( b == 0x01) // checks array number
+            {
+              for ( i = 0; i < 4096 && i > 0 ; i ++ )
+              current_pos ++;
+              left_right.write(current_pos);
+            }
           }
-         else if(Input_data == 0x01) // up/down movement
-         {
-
-          }
-          else{}
-    
+         else{}
+           
       }
+      void Camera_movement::MOVE_RIGHT(byte b)   
+      {
+        if( b == 0x03) // right movement
+          {
+            while ( b == 0x02) // checks array number
+            {
+              for ( i = 0; i < 4096 && i > 0 ; i ++ )
+              current_pos --;
+              left_right.write(current_pos);
+            }
+          }
+         else{}
+      }
+      void Camera_movement::MOVE_UP(byte b)   
+      {
+        if( b == 0x04) // right movement
+          {
+            while ( b == 0x01) // checks array number
+            {
+              for ( i = 0; i < 4096 && i > 0 ; i ++ )
+              current_pos ++;
+              up_down.write(current_pos);
+            }
+          }
+         else{}
+      }
+      void Camera_movement::MOVE_DOWN(byte b)   
+      {
+        if( b == 0x04) // right movement
+          {
+            while ( b == 0x02) // checks array number
+            {
+              for ( i = 0; i < 4096 && i > 0 ; i ++ )
+              current_pos --;
+              up_down.write(current_pos);
+            }
+          }
+    
+      
   };
   // put your main code here, to run repeatedly:
 
