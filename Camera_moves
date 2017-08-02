@@ -1,29 +1,26 @@
-#include <Servo.h>
+/*
 
-Servo up_down, left_right;
-byte Input_data[30];
-int i;
+This file contains camera functions:
 
-void setup() {
+Camera_movement() // intializes camera
+MOVE_LEFT(byte b) // turns camera left
+MOVE_RIGHT(byte b) // turns camera right
+MOVE_UP(byte b) // tilts camera up
+MOVE_DOWN(byte b) // tilts camera down
 
-  up_down.attach(5);
-  left_right.attach(6);
-  Serial.begin(9600);
-}
+*/
 
-void loop() {
 
-  class Camera_movement
-  {
-      Camera_movement::Camera_movement() // intialization
+void Camera_movement() // intialization
       {
         current_pos = 2048;
         up_down.write(current_pos);
         left_right.write(current_pos);
 
       }
-      void Camera_movement::MOVE_LEFT(byte b) // Operating the Camera 
-                                             // b = input buffer information
+      
+ void MOVE_LEFT(byte b) // Operating the Camera 
+                         // b = input buffer information
       {
         if( b == 0x03) // left movement
           {
@@ -37,7 +34,8 @@ void loop() {
          else{}
            
       }
-      void Camera_movement::MOVE_RIGHT(byte b)   
+      
+ void MOVE_RIGHT(byte b)   
       {
         if( b == 0x03) // right movement
           {
@@ -50,7 +48,9 @@ void loop() {
           }
          else{}
       }
-      void Camera_movement::MOVE_UP(byte b)   
+      
+      
+      void MOVE_UP(byte b)   
       {
         if( b == 0x04) // right movement
           {
@@ -63,7 +63,8 @@ void loop() {
           }
          else{}
       }
-      void Camera_movement::MOVE_DOWN(byte b)   
+      
+      void MOVE_DOWN(byte b)   
       {
         if( b == 0x04) // right movement
           {
@@ -74,10 +75,4 @@ void loop() {
               up_down.write(current_pos);
             }
           }
-    
-      
-  };
-  // put your main code here, to run repeatedly:
-
-
-}
+      }// CLOSE void MOVE_DOWN
