@@ -1,5 +1,5 @@
 
-// Arduino Hardware Configuration
+// Robot Hardware Configuration
 
 // Compressor System
 #define COMPRESSOR_ESC1_PIN 2
@@ -11,10 +11,6 @@
 // WiFi System
 #define TX_PIN 11 // For Wi-Fi Board
 #define RX_PIN 12 // For Wi-Fi Board
-
-// Michael says that the pressure sensors are not used
-//#define PRESSURE_SENSOR1_PIN A0
-//#define PRESSURE_SENSOR2_PIN A1
 
 /* 
 I think that the ESCs need to be at half power when turned on. 
@@ -30,6 +26,9 @@ Half power on Open CM 9.04 is about 2048
 /*
 We need to define pins for drive and steering motors
 *
-#define ID_Left_Wheel 0 // Left dynamixel motor
-#define ID_Right_Wheel 2 // Right dynamixel motor
 
+//#define LEFT_MOTOR_PIN 5
+//#define RIGHT_MOTOR_PIN 6
+
+// Water Spray Trigger Pins
+# define sprayTriggerPin 20
