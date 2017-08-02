@@ -32,3 +32,20 @@ Pin 22 LED_10 // Pressure_Actuator on
 //Camera 
 //We have the camera set on Channel 1 
 //And the transceiver on Channel 1 Band E
+
+//Dynamixel Motors : Running on Protocol 1.0
+// 
+// note on code
+// For forward motion:
+// Dxl.writeWord(ID,Moving_Speed, 600)
+//               ^      ^          ^
+//               id   protocol    speed 
+//               of   change      
+//              motor /RPMs
+
+// For Reverse Motion:
+// Dxl.WriteWord( ID, Moving_Speed, 600|0x600)
+//                 ^       ^            ^
+//                ID     same as      reverse 
+//                of     before       command
+//              motor
