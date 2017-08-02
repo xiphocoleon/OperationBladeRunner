@@ -33,8 +33,11 @@ Pin 22 LED_10 // Pressure_Actuator on
 //We have the camera set on Channel 1 
 //And the transceiver on Channel 1 Band E
 
-//Dynamixel Motors : Running on Protocol 1.0
-// 
+//Dynamixel Motors : Running on Protocol 1.0 servos have to plugged in while updating micro controller
+//ID_2 & ID_0 -> Are on drive mode
+//ID_1 & ID_3 -> Are on Joint mode/steering mode
+//            -> 2048 = 180 degrees of rotation 
+//            -> 1024 = 90 degrees of rotation 
 // note on code
 // For forward motion:
 // Dxl.writeWord(ID,Moving_Speed, 600)
