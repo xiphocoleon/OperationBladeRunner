@@ -30,6 +30,6 @@ Half power on Open CM 9.04 is about 2048
 /*
 We need to define pins for drive and steering motors
 *
+#define ID_Left_Wheel 0 // Left dynamixel motor
+#define ID_Right_Wheel 2 // Right dynamixel motor
 
-//#define LEFT_MOTOR_PIN 5
-//#define RIGHT_MOTOR_PIN 6
