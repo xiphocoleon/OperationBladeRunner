@@ -52,6 +52,10 @@ void loop()
                                     Dxl.goalPosition(ID_NUM, curr_pos); // steering wheel 2
                         }
              }
+             else 
+             {
+                        cur_pos = 2048;
+             }
   }
   
   void TURN_LEFT()
@@ -63,6 +67,10 @@ void loop()
                         Dxl.goalPosition(ID_NUM, curr_pos); //steering wheel 1
                         Dxl.goalPosition(ID_NUM, curr_pos); // steering wheel 2
             }
+         }
+         else 
+         {
+            curr_pos = 0;
          }
   }
   void GO_FORWARD()
