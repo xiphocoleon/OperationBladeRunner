@@ -1,34 +1,53 @@
-#include<Servo.h>
-
-//_______________________________
-//
-// The Drive train Subsystem
-// Primarily controls the drivetrain motors for driving the robot
-//_______________________________
-
-
-//Servo leftMotor;
-//Servo rightMotor;
-
-void driveTrainInit() {
-  //leftMotor.attach(LEFT_MOTOR_PIN);
-  //rightMotor.attach(RIGHT_MOTOR_PIN);
-  pinMode(LEFT_MOTOR_PIN,OUTPUT);
-  pinMode(RIGHT_MOTOR_PIN,OUTPUT);
-  analogWrite(LEFT_MOTOR_PIN,127); // Output PWM 500Hz
-  analogWrite(RIGHT_MOTOR_PIN,127);
-}
-
-// Setting power to drivetrain
-// 90- 0rpm
-// 180 full speed (forward)
-// 0 full speed (reverse)
-void setDriveTrainPower(int leftMotorPower, int rightMotorPower) {
-
-  //Serial.println("Setting Power");
+/*Dynamixel control
+ID_0 & ID_2 are on drive mode 
+ID_1 & ID_3 are on joint mode/steer mode
+            -> 2048 is 180 degrees of rotation 
+            -> 1024 is 90 degreees of rotation
+            -> 0 is 0 degrees if rotation
+To make dynamixel go forward 
+  -> Dxl.writeWord( ID, Moving_Speed, 600 )
   
-  //leftMotor.write(leftMotorPower);
-  //rightMotor.write(rightMotorPower);
-  analogWrite(LEFT_MOTOR_PIN,leftMotorPower);
-  analogWrite(RIGHT_MOTOR_PIN,rightMotorPower);
+To make dynamixel go backwards 
+  -> Dxl.writeWord( ID, Moving_Speed, 600| 0x600)
+  
+*/
+#define DXL_BUS_SERIAL3 3
+
+#define ID_Left_Wheel 0
+#define ID_Right_Wheel 2
+#define ID_Steer_1 1 
+#define ID_Steer_2 3
+
+#define CCW_Angle_Limit 8
+#define Goal_Postion 30
+#define Moving_Speed 32
+
+#define CONTROL_MODE 11
+
+Dynamixel Dxl(DXL_BUS_SERIAL3);
+
+void setup() 
+{
+
+ Dxl.begin(1);
+ Dxl.writeByte(ID_Left_Wheel, CCW_Angle_Limit, 0);
+ Dxl.writeByte(ID_Right_Wheel, CCW_Angle_Limit, 0);
+ Dxl.jointMode(ID_Steer_1);
+ Dxl.jointMode(ID_Steer_2);
+
 }
+
+void loop()
+{
+  Dxl.writeWord(ID_Steer_1, GOAL_POSITION, 0); //steering wheel 1
+  Dxl.writeWord(ID_Steer_2, GOAL_POSITION, 0); // steering wheel 2
+  
+  Dxl.writeWord(ID_Left_Wheel, Moving_Speed,  600); // forward code 
+  Dxl.writeWord(ID_Right_Wheel, Moving_Speed, 0x3FF | 600);
+  
+  Dxl.writeWord(ID_Left_Wheel, Moving_Speed, 600 | 0x600); // reverse code
+  Dxl.writeWord(ID_Right_Wheel, Moving_Speed, 600 | 0x600);
+  delay(5000); 
+}
+
+
