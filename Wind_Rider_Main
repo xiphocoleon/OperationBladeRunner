@@ -16,6 +16,9 @@ byte Input_data[30];
 int current_pos;
 // int i; already defined -- does this cause a problem?
 
+//Dynamixel steer variable
+int curr_pos = 1024;
+
 // Drive and steering motor command bytes from remote control:
 byte stop[] = {
   0xFF, 0x00, 0x00, 0x00, 0xFE};
@@ -75,6 +78,8 @@ Servo ESC1;
 Servo ESC2;
 Servo sprayServo; // Spray wash servo
 Servo up_down, left_right; // Camera servos
+
+Dynamixel Dxl(DXL_BUS_SERIAL3); //Controlling Serial port for Dynamixels
 
 void setup()
 {
