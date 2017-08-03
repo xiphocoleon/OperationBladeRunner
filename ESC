@@ -1,0 +1,23 @@
+void pressureESCinit() 
+{
+  //Attach ESC1 to pin 2
+  ESC1.attach(ESC1_PIN);
+
+  //Attach ESC2 to pin 3
+  ESC2.attach(ESC2_PIN);
+
+  ESC1.writeMicroseconds(INITIAL_ESC_POWER); //initializes ESC 1 for startup
+  ESC2.writeMicroseconds(INITIAL_ESC_POWER); //initializes the ESC 2 for startup
+  delay(3000);
+  
+  //LZM
+  //ESC.writeMicroseconds(1500);
+}
+
+// Sets ESCs to the same intensity
+void setPressureESC(int power) 
+{
+  ESC1.writeMicroseconds(power);
+  ESC2.writeMicroseconds(power);
+  //ESC.writeMicroseconds(Setpoint);
+}
