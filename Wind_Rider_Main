@@ -1,8 +1,20 @@
+// Libraries
 #include <string.h>
+#include <Servo.h>
 
-int led = 9;
+// LEDs:
+#define led 9
+
+// Communication variables:
 byte buffer = 0;
-int curr_pos = 1024;
+
+// Spray wash servo variables:
+int pos = 80; // Servo begins initially at 80 degrees
+
+// Camera servo variables:
+byte Input_data[30];
+int current_pos;
+// int i; already defined -- does this cause a problem?
 
 // Drive and steering motor command bytes from remote control:
 byte stop[] = {
@@ -22,10 +34,25 @@ byte suckOff[] = {
 byte suckOn[] = {
   0xFF, 0x01, 0x01, 0x00, 0xFE};
 
-
-// Wash commands from remote control:
+// Spray wash commands from remote control:
+byte sprayOff[] = {
+  0xEE, 0x01, 0x00, 0x00, 0xFE};
+byte sprayOn[] = {
+  0xEE, 0x01, 0x01, 0x00, 0xFE};
 
 // Camera commands from remote control:
+byte cameraOff[] = {
+  0xEE, 0x01, 0x00, 0x00, 0xFE};
+byte cameraOn[] = {
+  0xEE, 0x01, 0x01, 0x00, 0xFE};
+byte cameraLeft[] = {
+  0xEE, 0x01, 0x00, 0x00, 0xFE};
+byte sprayRight[] = {
+  0xEE, 0x01, 0x01, 0x00, 0xFE};
+byte sprayUp[] = {
+  0xEE, 0x01, 0x00, 0x00, 0xFE};
+byte sprayDown[] = {
+  0xEE, 0x01, 0x01, 0x00, 0xFE};
 
 // Blank array to store captured command:
 byte capturedByte[] = {
@@ -42,6 +69,12 @@ int driveCommand = 0;
 int vacuumCommand = 0;
 int washCommand = 0;
 int cameraCommand = 0;
+
+// Create objects:
+Servo ESC1;
+Servo ESC2;
+Servo sprayServo; // Spray wash servo
+Servo up_down, left_right; // Camera servos
 
 void setup()
 {
@@ -64,6 +97,12 @@ void setup()
 
   // LED indicators:
   pinMode(led, OUTPUT);
+  
+  // Servo setup:
+  
+  sprayServo.attach(20);
+  up_down.attach(21);
+  left_right.attach(22);
 
   /*
   Now we want to get the serialInterrupt to work on Serial 2; 
@@ -74,8 +113,8 @@ void setup()
 
 }
 
-void loop(){
-
+void loop(){  
+  
   while( (Serial2.available() > 0) && (buffer != stop[0]) )
   {
     // Reads Serial2, waiting for FF command:
@@ -154,11 +193,11 @@ void loop(){
   }// CLOSE else 1
 }// CLOSE void loop
 
-//
-//void blink()
-//{
-//  digitalWrite(led, HIGH);
-//  delay(50);
-//  digitalWrite(led, LOW);
-//  delay(50);
-//}
+
+void blink()
+{
+  digitalWrite(led, HIGH);
+  delay(50);
+  digitalWrite(led, LOW);
+  delay(50);
+}
