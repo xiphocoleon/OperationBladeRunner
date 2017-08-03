@@ -2,6 +2,7 @@
 
 int led = 9;
 byte buffer = 0;
+int curr_pos = 1024;
 
 // Drive and steering motor command bytes from remote control:
 byte stop[] = {
