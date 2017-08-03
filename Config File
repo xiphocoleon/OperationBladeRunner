@@ -23,6 +23,19 @@ Half power on Open CM 9.04 is about 2048
 
 // Drivetrain
 
+#define DXL_BUS_SERIAL3 3
+
+#define ID_Left_Wheel 0
+#define ID_Right_Wheel 2
+#define ID_Steer_1 1 
+#define ID_Steer_2 3
+
+#define CCW_Angle_Limit 8
+#define Goal_Postion 30
+#define Moving_Speed 32
+
+#define CONTROL_MODE 11
+
 /*
 We need to define pins for drive and steering motors
 *
