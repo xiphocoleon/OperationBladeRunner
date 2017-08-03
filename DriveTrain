@@ -24,6 +24,8 @@ To make dynamixel go backwards
 
 #define CONTROL_MODE 11
 
+int curr_pos = 1024;
+
 Dynamixel Dxl(DXL_BUS_SERIAL3);
 
 void setup() 
@@ -38,16 +40,42 @@ void setup()
 }
 
 void loop()
-{
-  Dxl.writeWord(ID_Steer_1, GOAL_POSITION, 0); //steering wheel 1
-  Dxl.writeWord(ID_Steer_2, GOAL_POSITION, 0); // steering wheel 2
+{ 
   
-  Dxl.writeWord(ID_Left_Wheel, Moving_Speed,  600); // forward code 
-  Dxl.writeWord(ID_Right_Wheel, Moving_Speed, 0x3FF | 600);
+  void TURN_RIGHT()
+  {
+            if( curr_pos < 2048 && curr_pos > 0)
+            {
+                        for (curr_pos ; curr_pos < 2048 && curr_pos > 0; curr_pos++)
+                        {
+                                    Dxl.goalPosition(ID_NUM, curr_pos); //steering wheel 1
+                                    Dxl.goalPosition(ID_NUM, curr_pos); // steering wheel 2
+                        }
+             }
+  }
   
-  Dxl.writeWord(ID_Left_Wheel, Moving_Speed, 600 | 0x600); // reverse code
-  Dxl.writeWord(ID_Right_Wheel, Moving_Speed, 600 | 0x600);
-  delay(5000); 
+  void TURN_LEFT()
+  {         
+         if( curr_pos < 2048 && curr_pos > 0)
+         {
+            for (curr_pos ; curr_pos < 2048 && curr_pos > 0; curr_pos--)
+            {           
+                        Dxl.goalPosition(ID_NUM, curr_pos); //steering wheel 1
+                        Dxl.goalPosition(ID_NUM, curr_pos); // steering wheel 2
+            }
+         }
+  }
+  void GO_FORWARD()
+  {
+            Dxl.writeWord(ID_Left_Wheel, Moving_Speed,  600); // forward code 
+            Dxl.writeWord(ID_Right_Wheel, Moving_Speed, 0x3FF | 600);
+  }
+ 
+ void GO_BACKWARD()
+  {
+            Dxl.writeWord(ID_Left_Wheel, Moving_Speed, 600 | 0x600); // reverse code
+            Dxl.writeWord(ID_Right_Wheel, Moving_Speed, 600 | 0x600);
+  }
 }
 
 
