@@ -1,78 +1,62 @@
 /*
 
-This file contains camera functions:
-
-Camera_movement() // intializes camera
-MOVE_LEFT(byte b) // turns camera left
-MOVE_RIGHT(byte b) // turns camera right
-MOVE_UP(byte b) // tilts camera up
-MOVE_DOWN(byte b) // tilts camera down
-
-*/
+ This file contains camera functions:
+ 
+ Camera_movement() // intializes camera
+ MOVE_LEFT(byte b) // turns camera left
+ MOVE_RIGHT(byte b) // turns camera right
+ MOVE_UP(byte b) // tilts camera up
+ MOVE_DOWN(byte b) // tilts camera down
+ 
+ */
 
 
 void Camera_movement() // intialization
-      {
-        current_pos = 2048;
-        up_down.write(current_pos);
-        left_right.write(current_pos);
+{
+  current_pos = 2048;
+  up_down.write(current_pos);
+  left_right.write(current_pos);
 
-      }
-      
- void MOVE_LEFT(byte b) // Operating the Camera 
-                         // b = input buffer information
-      {
-        if( b == 0x03) // left movement
-          {
-            while ( b == 0x01) // checks array number
-            {
-              for ( i = 0; i < 4096 && i > 0 ; i ++ )
-              current_pos ++;
-              left_right.write(current_pos);
-            }
-          }
-         else{}
-           
-      }
-      
- void MOVE_RIGHT(byte b)   
-      {
-        if( b == 0x03) // right movement
-          {
-            while ( b == 0x02) // checks array number
-            {
-              for ( i = 0; i < 4096 && i > 0 ; i ++ )
-              current_pos --;
-              left_right.write(current_pos);
-            }
-          }
-         else{}
-      }
-      
-      
-      void MOVE_UP(byte b)   
-      {
-        if( b == 0x04) // right movement
-          {
-            while ( b == 0x01) // checks array number
-            {
-              for ( i = 0; i < 4096 && i > 0 ; i ++ )
-              current_pos ++;
-              up_down.write(current_pos);
-            }
-          }
-         else{}
-      }
-      
-      void MOVE_DOWN(byte b)   
-      {
-        if( b == 0x04) // right movement
-          {
-            while ( b == 0x02) // checks array number
-            {
-              for ( i = 0; i < 4096 && i > 0 ; i ++ )
-              current_pos --;
-              up_down.write(current_pos);
-            }
-          }
-      }// CLOSE void MOVE_DOWN
+}
+
+void MOVE_LEFT() // Operating the Camera 
+// b = input buffer information
+{
+
+  for ( i = 0; i < 4096 && i > 0 ; i ++ )
+  {
+    current_pos ++;
+    left_right.write(current_pos);
+  }
+}
+
+
+
+void MOVE_RIGHT()   
+{
+
+  for ( i = 0; i < 4096 && i > 0 ; i ++ )
+    current_pos --;
+  left_right.write(current_pos);
+
+}
+
+
+void MOVE_UP()   
+{
+  for ( i = 0; i < 4096 && i > 0 ; i ++ )
+  {
+    current_pos ++;
+    up_down.write(current_pos);
+  }
+}
+
+void MOVE_DOWN()   
+{
+  for ( i = 0; i < 4096 && i > 0 ; i ++ )
+    current_pos --;
+  up_down.write(current_pos);
+
+
+}// CLOSE void MOVE_DOWN
+
