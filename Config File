@@ -4,7 +4,7 @@
 // Vacuum System
 #define ESC1_PIN 2
 #define ESC2_PIN 3
-#define INITIAL_ESC_POWER 2048 // Half of 4096
+#define INITIAL_ESC_POWER 1000 // Half of 4096
 #define MINIMUM 2000 // This may be the lowest value to keep robot on the wall
 #define MAXIMUM 3000  // This is an arbitrary uppper limit (untested)
 
@@ -12,23 +12,23 @@
 #define CAMERA_PIN 10
 
 // WiFi System
-#define TX_PIN 11 // For Wi-Fi Board
-#define RX_PIN 12 // For Wi-Fi Board
+//#define TX_PIN 11 // For Wi-Fi Board
+//#define RX_PIN 12 // For Wi-Fi Board
 
 // Water Spray Trigger Pins
 #define sprayTriggerPin 20
 
 // Drivetrain
-
-#define DXL_BUS_SERIAL3 3
-
-#define ID_Left_Wheel 0
-#define ID_Right_Wheel 2
-#define ID_Steer_1 1 
-#define ID_Steer_2 3
-
-#define CCW_Angle_Limit 8
-#define Goal_Postion 30
-#define Moving_Speed 32
-
-#define CONTROL_MODE 11
+//
+//#define DXL_BUS_SERIAL3 3
+//
+//#define ID_Left_Wheel 0
+//#define ID_Right_Wheel 2
+//#define ID_Steer_1 1 
+//#define ID_Steer_2 3
+//
+//#define CCW_Angle_Limit 8
+//#define Goal_Postion 30
+//#define Moving_Speed 32
+//
+//#define CONTROL_MODE 11
