@@ -3,7 +3,13 @@
 #include <Servo.h>
 
 // LEDs:
-#define led 9
+int led[] = {
+  13, 14, 15, 16};  // Pin 14 goes HIGH while board is starting up 
+// b/c it is onboard LED 
+
+//ESC power
+int power_on = 1300;
+int power_off = 1000;
 
 // Communication variables:
 byte buffer = 0;
@@ -16,7 +22,19 @@ byte Input_data[30];
 int current_pos;
 // int i; already defined -- does this cause a problem?
 
-//Dynamixel steer variable
+//Dynamixel driving and steering variables:
+#define DXL_BUS_SERIAL3 3
+#define ID_Left_Wheel 0
+#define ID_Right_Wheel 2
+#define ID_Steer_1 1 
+#define ID_Steer_2 3
+
+#define CCW_Angle_Limit 8
+#define Goal_Postion 30
+#define Moving_Speed 32
+
+#define CONTROL_MODE 11
+
 int curr_pos = 1024;
 
 // Drive and steering motor command bytes from remote control:
@@ -32,30 +50,36 @@ byte right[] = {
   0xFF, 0x00, 0x08, 0x00, 0xFE};
 
 // Vacuum motor commands from remote control:
-byte suckOff[] = {
+byte VacuumOff[] = {
   0xFF, 0x01, 0x00, 0x00, 0xFE};
-byte suckOn[] = {
+byte VacuumOn[] = {
   0xFF, 0x01, 0x01, 0x00, 0xFE};
 
 // Spray wash commands from remote control:
 byte sprayOff[] = {
-  0xEE, 0x01, 0x00, 0x00, 0xFE};
+  0xFF, 0x02, 0x00, 0x00, 0xFE};
 byte sprayOn[] = {
-  0xEE, 0x01, 0x01, 0x00, 0xFE};
+  0xFF, 0x02, 0x01, 0x00, 0xFE};
 
 // Camera commands from remote control:
 byte cameraOff[] = {
-  0xEE, 0x01, 0x00, 0x00, 0xFE};
+  0xFF, 0x04, 0x00, 0x00, 0xFE};
 byte cameraOn[] = {
-  0xEE, 0x01, 0x01, 0x00, 0xFE};
+  0xFF, 0x04, 0x01, 0x00, 0xFE};
 byte cameraLeft[] = {
-  0xEE, 0x01, 0x00, 0x00, 0xFE};
-byte sprayRight[] = {
-  0xEE, 0x01, 0x01, 0x00, 0xFE};
-byte sprayUp[] = {
-  0xEE, 0x01, 0x00, 0x00, 0xFE};
-byte sprayDown[] = {
-  0xEE, 0x01, 0x01, 0x00, 0xFE};
+  0xFF, 0x04, 0x02, 0x00, 0xFE};
+byte cameraRight[] = {
+  0xFF, 0x04, 0x04, 0x00, 0xFE};
+byte cameraUp[] = {
+  0xFF, 0x04, 0x08, 0x00, 0xFE};
+byte cameraDown[] = {
+  0xFF, 0x04, 0x10, 0x00, 0xFE};
+
+// Speed commands from remote control:
+byte speedDrive[] = {
+  0xFF, 0x05, 0x01, 0x32, 0xFE};  // Speed of drive motors
+byte speedVacuum[] = {
+  0xFF, 0x05, 0x02, 0x32, 0xFE};  // Speed of vacuum motors
 
 // Blank array to store captured command:
 byte capturedByte[] = {
@@ -72,6 +96,7 @@ int driveCommand = 0;
 int vacuumCommand = 0;
 int washCommand = 0;
 int cameraCommand = 0;
+int speedCommand = 0;
 
 // Create objects:
 Servo ESC1;
@@ -83,7 +108,6 @@ Dynamixel Dxl(DXL_BUS_SERIAL3); //Controlling Serial port for Dynamixels
 
 void setup()
 {
-
   // Setup for the WiFi card
   // Five second delays were added to allow extra time for WiFi card to configure
   delay(5000);
@@ -97,112 +121,278 @@ void setup()
   delay(5000);
   Serial2.println("AT+CIFSR\r\n\0");
   delay(5000);
-  //Serial2.attachInterrupt(serialInterrupt);
 
+  // Vacuum initialization:
+  pressureESCinit();
 
-  // LED indicators:
-  pinMode(led, OUTPUT);
-  
   // Servo setup:
-  
   sprayServo.attach(20);
   up_down.attach(21);
   left_right.attach(22);
 
-  /*
-  Now we want to get the serialInterrupt to work on Serial 2; 
-   This page gives ideas but I haven't tried yet:
-   http://support.robotis.com/en/software/robotis_opencm/learning/serial_communication.htm
-   */
-  //SerialUSB.attachInterrupt(usbInterrupt);
-
-}
-
-void loop(){  
+  // Dynamixel Setup:
+  Dxl.begin(1);
+  Dxl.writeByte(ID_Left_Wheel, CCW_Angle_Limit, 0);
+  Dxl.writeByte(ID_Right_Wheel, CCW_Angle_Limit, 0);
+  Dxl.jointMode(ID_Steer_1);
+  Dxl.jointMode(ID_Steer_2);
   
-  while( (Serial2.available() > 0) && (buffer != stop[0]) )
+}//CLOSE setup
+
+void loop(){
+
+  while(1)
   {
-    // Reads Serial2, waiting for FF command:
+    delay(10);
+    //Serial2.println("Serial 2 Available....");
     buffer = Serial2.read();
-    Serial2.println("Waiting for command . . . ");  
-  }// CLOSE while loop for reading serial
 
-  capturedByte[0] = stop[0]; // Maybe redundant command
 
-  // Series of IF statements to determine command:
-  // 0 Byte. All commands begin with FF; if code gets here, assume capturedByte[0] == FF
+    //  while( buffer != stop[0] )
+    //  {
+    //  
+    //   //FF
+    //    // Reads Serial2, waiting for FF command:
+    //   buffer = Serial2.read();
+    //   delay(100);
+    //   //Serial2.println(buffer);
+    //   //Serial2.println("Waiting for command . . . ");  
+    //   //delay(100);
+    //  } // CLOSE while loop for reading serial
 
-  buffer = Serial2.read();     // Should read next byte after FF
-  capturedByte[1] = buffer;    // Put next serial read into capturedByte[]
+    // Puts above read into capturedByte[0]:
+    capturedByte[0] = buffer;
 
-  // 1 Byte. Check for drive/steering(0x00) or suction(0x01):
-  if (capturedByte[1] == stop[1])
-  {
-    // DRIVE could be correct, as long as capturedByte[4] is FE, which we can check below as in case 0, but it's not necessary
-    // 2. Byte index 2 chooses switch for stop(0x00), forward(0x01), backward(0x02), left(0x04), right(0x08)
-
-    buffer = Serial2.read();     // Should read next byte after FF
-    capturedByte[2] = buffer;    // Put next serial read into capturedByte[]
-
-    driveCommand = capturedByte[2];
-    switch(driveCommand)
+    if (capturedByte[0] == stop[0] ) // This means capturedByte[0] is FF
     {
-    case 0:
-      //STOP
-      //SerialUSB.println("You have stopped.");
-      break;
-    case 1:
-      // FORWARD
-      //SerialUSB.println("You are going forward.");
-      break;
-    case 2:
-      // BACKWARD
-      break;
-    case 4:
-      // LEFT
-      break;
-    case 8:
-      // RIGHT
-      break; 
-    default: 
-      // ?
-      break;
+      buffer = Serial2.read();     // Should read next byte after FF
+      capturedByte[1] = buffer;  
+
+      // 1 Byte. Check for drive/steering(0x00) or suction(0x01):
+      Serial2.println("Capturedbyte 0 = stop[0] ");
+
+      if (capturedByte[1] == stop[1])
+      {
+        // DRIVE could be correct, as long as capturedByte[4] is FE, which we can check below as in case 0, but it's not necessary
+        // 2. Byte index 2 chooses switch for stop(0x00), forward(0x01), backward(0x02), left(0x04), right(0x08)
+        // Serial2.println("Drive command read!!! Currently Stopped !!!");
+        buffer = Serial2.read();     // Should read next byte after FF
+        capturedByte[2] = buffer;    // Put next serial read into capturedByte[]
+
+        //Serial2.print("Captured Byte 2 is: ");
+        //Serial2.println(capturedByte[2]);
+
+
+        driveCommand = capturedByte[2];
+        switch(driveCommand)
+        {
+        case 0:
+          //STOP
+          Serial2.println("You have stopped.");
+          for (i = 0; i < 5; i++)
+          {
+            capturedByte[i] = 0x00;
+          }
+          delay(100);
+          break;
+        case 1:
+          // FORWARD
+          // GO_FORWARD();
+          Serial2.println("You are going forward.");            
+          for (i = 0; i < 5; i++)
+          {
+            capturedByte[i] = 0x00;
+          }
+          delay(100);
+          break;
+        case 2:
+          // BACKWARD
+          // GO_BACKWARD();
+          Serial2.println("You are going backwards.");
+          for (i = 0; i < 5; i++)
+          {
+            capturedByte[i] = 0x00;
+          }      
+          delay(100);
+          break;
+        case 4:
+          // LEFT
+          // TURN_LEFT();
+          Serial2.println("You are going left.");
+          for (i = 0; i < 5; i++)
+          {
+            capturedByte[i] = 0x00;
+          }     
+          delay(100);
+          break;
+        case 8:
+          // RIGHT
+          // TURN_RIGHT();
+          Serial2.println("You are going right.");
+          for (i = 0; i < 5; i++)
+          {
+            capturedByte[i] = 0x00;
+          }
+          break; 
+        default: 
+          // ?
+          Serial2.print("This is the drive switch default area b/c didn't get 0, 1, 2, 4, 8.");
+          break;
+        } //CLOSE drive command switch
+      }//CLOSE if 1 check
+
+        else if (capturedByte[1] == VacuumOff[1])
+      {
+        Serial2.println("You have chosen a vacuum command");
+        buffer = Serial2.read();     // Should read next byte after FF
+        capturedByte[2] = buffer;    // Put next serial read into capturedByte[]
+
+        // Vacuum command is selected (0x01)
+        // Byte index 2 will set vacuum intensity
+
+        vacuumCommand = capturedByte[2];
+        switch(vacuumCommand)
+        {
+        case 0:
+          setPressureESC(power_off); 
+          Serial2.println("Vacuum is off");
+          // Sucking is turned OFF
+          // setPressureESC(power_on);
+          break;
+        case 1:
+          setPressureESC(power_on); 
+          Serial2.println("Vacuum is on");
+          // Sucking is turned ON
+          // setPressureESC(power_off);
+          break;
+        default:
+          // Invalid sucking command
+          Serial2.println("Invalid vacuum command.");
+          break;
+        }// CLOSE vacuum switch
+      }// CLOSE else if 1
+      else if (capturedByte[1] == cameraOff[1])
+      {
+        // camera controls from buffer read 
+
+        buffer = Serial2.read();     // Should read next byte after EE *For now*
+        capturedByte[2] = buffer;
+
+        cameraCommand = capturedByte[2];
+        switch(cameraCommand)
+        {
+        case 0:
+          // Camera off
+          break;
+        case 1:
+          // Camera on 
+          break;
+        case 2:
+          // Camera left
+          // MOVE_LEFT();
+          break;
+        case 4:
+          // Camera right
+          // MOVE_RIGHT();
+          break;
+        case 8:
+          // Camera up
+          // MOVE_UP();
+          break;
+        case 16:
+          // Camera down
+          // MOVE_DOWN();
+          break;
+        default:
+          // Invalid sucking command
+          Serial2.println("Invalid camera command.");
+          break;
+
+        }// CLOSE camera switch
+      }
+      else if ( capturedByte[1] == sprayOff[1] )
+      {
+
+        buffer = Serial2.read();     // Should read next byte after EE *For now*
+        capturedByte[2] = buffer;
+
+        washCommand = capturedByte[2];
+        switch (washCommand)
+        {
+        case 0:
+          // Spray is OFF
+          //sprayTriggerOff();
+          break;
+        case 1:
+          // Spray is ON
+          // sprayTriggerOn();
+          break;
+
+        default:
+          // Invalid wash command
+          Serial2.println("Invalid spray command.");
+          break;
+        }
+      }
+      else if ( capturedByte[1] == speedDrive[1] ) // Choose speed of motor or speed of vacuum motor
+      {
+
+        buffer = Serial2.read(); // Should read 0x01 for drive motor speed or 0x02 for vacuum motor speed
+        capturedByte[2] = buffer;
+
+        speedCommand = capturedByte[2];
+        switch (speedCommand)
+        {
+        case 1:
+          // Speed of drive motor
+          buffer = Serial2.read(); 
+          capturedByte[3] = buffer;  // This is drive motor speed value
+          Serial2.print("Change drive motor speed to: ");
+          Serial2.println(capturedByte[3]);
+          break;
+
+        case 2:
+          // Speed of vacuum motor
+          buffer = Serial2.read(); 
+          capturedByte[3] = buffer;  // This is vacuum motor speed value
+          Serial2.print("Change vacuum motor speed to: ");
+          Serial2.println(capturedByte[3]);
+          break;
+
+        default:
+          // Invalid speed command
+          Serial2.println("Invalid speed command.");
+          break;
+
+        }//CLOSE speedCommand switch
+      }//CLOSE speed else if
+      else
+      {
+
+        Serial2.print("Capturedbyte[1] does not equal any of our commands");
+      }// CLOSE else 1
+
+    }//CLOSE if captured byte 0 equal to stop 0
+    else
+    {
+      //Serial2.println("Captured byte 0 was not equal to stop 0 ...");
+      //CLOSE else 0
     }
 
-  }//CLOSE if 1 check
-  else if (capturedByte[1] == suckOff[1])
-  {
+  }// CLOSE big while loop 
 
-    buffer = Serial2.read();     // Should read next byte after FF
-    capturedByte[2] = buffer;    // Put next serial read into capturedByte[]
+  //  else
+  //  {
+  //    Serial2.println("Serial Not Available...");
+  //  }//CLOSE else serial not available
 
-    // Vacuum command is selected (0x01)
-    // Byte index 2 will set vacuum intensity
-
-    vacuumCommand = capturedByte[2];
-    switch(vacuumCommand)
-    {
-    case 0:
-      // Sucking is turned OFF
-      break;
-    case 1:
-      // Sucking is turned ON
-      break;
-    default:
-      // Invalid sucking command
-      break;
-    }// CLOSE SUCK switch
-  }// CLOSE else if 1
-  else
-  {
-  }// CLOSE else 1
 }// CLOSE void loop
 
 
-void blink()
-{
-  digitalWrite(led, HIGH);
-  delay(50);
-  digitalWrite(led, LOW);
-  delay(50);
-}
+//void blink(int choice)
+//{
+//  digitalWrite(led[choice], HIGH);
+//  delay(50);
+//  digitalWrite(led[choice], LOW);
+//  delay(50);
+//}
