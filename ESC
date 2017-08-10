@@ -2,22 +2,29 @@ void pressureESCinit()
 {
   //Attach ESC1 to pin 2
   ESC1.attach(ESC1_PIN);
-
+  delay(1000);
+  
   //Attach ESC2 to pin 3
   ESC2.attach(ESC2_PIN);
+  delay(1000);
+  Serial2.println("ESC 1 and 2 have been attached");
+  Serial2.println("ESC 1 and 2 go to initial ESC Power");
 
-  ESC1.writeMicroseconds(INITIAL_ESC_POWER); //initializes ESC 1 for startup
-  ESC2.writeMicroseconds(INITIAL_ESC_POWER); //initializes the ESC 2 for startup
+  //initializes ESC 1 and 2 for startup
+  ESC1.writeMicroseconds(INITIAL_ESC_POWER);
+  ESC2.writeMicroseconds(INITIAL_ESC_POWER);
   delay(3000);
-  
-  //LZM
-  //ESC.writeMicroseconds(1500);
+
 }
 
-// Sets ESCs to the same intensity
+
 void setPressureESC(int power) 
 {
+  // Sets ESCs to the same intensity
+  Serial2.print("Now writing ESC power to: ");
+  Serial2.println(power);
+  delay(4000);
   ESC1.writeMicroseconds(power);
   ESC2.writeMicroseconds(power);
-  //ESC.writeMicroseconds(Setpoint);
+
 }
